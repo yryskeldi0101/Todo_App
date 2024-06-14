@@ -1,14 +1,29 @@
 <div class="container">
-  <mat-card>
-    <p>
-      <img class="logo" src="assets/ngx-rocket-logo.png" alt="angular logo" />
-    </p>
-    <mat-card-content>
-      <mat-card-title translate>Hello world !</mat-card-title>
-      <mat-card-subtitle>
-        <app-loader [isLoading]="isLoading" [size]="1.5"></app-loader>
-        <q [hidden]="isLoading">{{ quote }}</q>
-      </mat-card-subtitle>
-    </mat-card-content>
-  </mat-card>
+  <div class="form_container">
+    <form #form="ngForm" (ngSubmit)="submit(form)">
+      <mat-form-field class="inp" appearance="fill" (click)="picker.open()">
+        <mat-label>
+          Date
+        </mat-label>
+        <input [(ngModel)]="props.date"  readonly [matDatepicker]="picker" matInput name="date"/>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field class="inp" appearance="fill">
+        <mat-label>
+          Task title
+        </mat-label>
+        <input [(ngModel)]="props.title" name="title" matInput placeholder="Write..."/>
+      </mat-form-field>
+      <button [disabled]="!props.title.trim().length" class="btn_submit" type="submit" mat-raised-button color="primary">Add task</button>
+    </form>
+  </div>
+  <div class="container_todo">
+    <ul class="ul_list">
+      <li class="list" *ngFor="let todo of todo">
+        <p>{{todo?.date}}</p>
+        <p>{{todo?.title}}</p>
+        <button (click)="deleteHandler(todo.id)" mat-raised-button color="warn">Delete</button>
+      </li>
+    </ul>
+  </div>
 </div>

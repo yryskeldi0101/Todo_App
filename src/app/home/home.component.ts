@@ -1,7 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { finalize } from 'rxjs/operators';
-
-import { QuoteService } from './quote.service';
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {NgForm} from "@angular/forms";
+import {formatDate} from "@angular/common";
 
 @Component({
   selector: 'app-home',
@@ -9,22 +8,43 @@ import { QuoteService } from './quote.service';
   styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit {
-  quote: string | undefined;
-  isLoading = false;
+  @ViewChild("form") form!: NgForm
 
-  constructor(private quoteService: QuoteService) {}
+  props = {
+    date: new Date(),
+    title: ""
+  }
+  todoList: any = []
+
+  constructor() { }
 
   ngOnInit() {
-    this.isLoading = true;
-    this.quoteService
-      .getRandomQuote({ category: 'dev' })
-      .pipe(
-        finalize(() => {
-          this.isLoading = false;
-        })
-      )
-      .subscribe((quote: string) => {
-        this.quote = quote;
-      });
+    const item = localStorage.getItem("todo");
+    if (item) {
+      this.todoList = JSON.parse(item);
+    }
+  }
+
+  get todo() {
+    return this.todoList;
+  }
+
+  deleteHandler(id: number) {
+    this.todoList = this.todoList.filter((item: any) => item.id !== id);
+    localStorage.setItem("todo", JSON.stringify(this.todoList));
+    console.log(this.todoList);
+  }
+
+  submit(form: NgForm) {
+    if (form.valid) {
+      const data = {
+        title: form.value.title,
+        date: formatDate(form.value.date, "dd.MM.yyyy", "en"),
+        id: Math.random()
+      }
+      this.todoList.push(data);
+      localStorage.setItem("todo", JSON.stringify(this.todoList));
+      this.props.title = "";
+    }
   }
 }
